@@ -14,7 +14,7 @@ import {
   ExternalLinkIcon,
   EyeIcon,
 } from './icons';
-import { fetchViews, trackTargetView, getTodayKey } from './viewTracker';
+import { fetchViews, trackTargetView } from './viewTracker';
 
 export default function App() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -24,37 +24,30 @@ export default function App() {
   const [views, setViews] = useState<Record<string, number>>({});
   const initialFetched = useRef(false);
 
-  // Chỉ gọi ĐÚNG 1 request duy nhất khi mở trang / F5
+  // Khi mở trang / F5: luôn gọi trackTargetView('page') để xác thực thiết bị và ghi nhận view
   useEffect(() => {
     if (initialFetched.current) return;
     initialFetched.current = true;
 
-    const today = getTodayKey();
-    const localKey = `hv_viewed_${today}_page`;
-
-    if (!localStorage.getItem(localKey)) {
-      // Nếu hôm nay chưa ghi nhận: gọi 1 request POST (server check IP, tăng view và trả về toàn bộ views mới nhất)
-      void trackTargetView('page').then((updated) => {
-        if (updated) setViews(updated);
-      });
-    } else {
-      // Nếu hôm nay đã ghi nhận rồi: chỉ gọi 1 request GET lấy số views mới nhất
-      void fetchViews().then((latestViews) => {
-        if (latestViews) setViews(latestViews);
-      });
-    }
+    void trackTargetView('page').then((updated) => {
+      if (updated) {
+        setViews(updated);
+      } else {
+        // Fallback nạp views hiện tại nếu trackTargetView không trả về
+        void fetchViews().then((latestViews) => {
+          if (latestViews) setViews(latestViews);
+        });
+      }
+    });
   }, []);
 
   const incrementView = (id: string) => {
-    // Tăng tức thì trên giao diện client nếu chưa click hôm nay
-    const today = getTodayKey();
-    if (!localStorage.getItem(`hv_viewed_${today}_${id}`)) {
-      setViews((prev) => ({
-        ...prev,
-        [id]: (prev[id] || 0) + 1,
-      }));
-    }
-    // Ghi nhận vào Server API với logic kiểm tra IP và reset theo ngày
+    // Tăng tức thì trên giao diện client
+    setViews((prev) => ({
+      ...prev,
+      [id]: (prev[id] || 0) + 1,
+    }));
+    // Ghi nhận vào Server API (Server và Firestore daily_views sẽ kiểm tra trùng lặp trong ngày)
     void trackTargetView(id).then((updated) => {
       if (updated) setViews(updated);
     });

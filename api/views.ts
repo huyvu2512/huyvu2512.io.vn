@@ -169,31 +169,20 @@ async function cleanupOldLogs(today: string): Promise<void> {
       }
     }
 
-    const queryUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:runQuery?key=${API_KEY}`;
-    const queryRes = await fetch(queryUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        structuredQuery: {
-          from: [{ collectionId: 'daily_views' }],
-          where: {
-            fieldFilter: {
-              field: { fieldPath: 'date' },
-              op: 'LESS_THAN',
-              value: { stringValue: today },
-            },
-          },
-        },
-      }),
-    });
-
-    if (queryRes.ok) {
-      const results = (await queryRes.json()) as any[];
-      if (Array.isArray(results)) {
-        for (const item of results) {
-          if (item && item.document?.name) {
-            const docPath = item.document.name.split('/documents/')[1];
-            await fetch(`${BASE_URL}/${docPath}?key=${API_KEY}`, { method: 'DELETE' }).catch(() => {});
+    // Lấy danh sách tài liệu trong daily_views để xóa sạch các ngày trước
+    const listRes = await fetch(`${BASE_URL}/daily_views?pageSize=300&key=${API_KEY}`);
+    if (listRes.ok) {
+      const data = (await listRes.json()) as any;
+      if (data && Array.isArray(data.documents)) {
+        for (const doc of data.documents) {
+          if (doc && doc.name) {
+            const docPath = doc.name.split('/documents/')[1];
+            const docDate = doc.fields?.date?.stringValue;
+            const docId = docPath.split('/').pop() || '';
+            // Xóa nếu ngày ghi nhận nhỏ hơn hôm nay hoặc tiền tố document ID nhỏ hơn hôm nay
+            if ((docDate && docDate < today) || (docId && docId.substring(0, 10) < today)) {
+              await fetch(`${BASE_URL}/${docPath}?key=${API_KEY}`, { method: 'DELETE' }).catch(() => {});
+            }
           }
         }
       }
@@ -268,10 +257,10 @@ export default async function handler(req: any, res: any) {
         return;
       }
 
-      // Dọn dẹp log ngày cũ nếu vừa sang ngày mới
-      void cleanupOldLogs(today);
+      // 1. Người đầu tiên trong ngày vào: AWAIT dọn dẹp sạch toàn bộ log ngày hôm trước trước khi tiếp tục
+      await cleanupOldLogs(today);
 
-      // Định danh thiết bị: Dùng clientId duy nhất của máy (dù đổi Wi-Fi sang 4G hay VPN vẫn là 1 máy)
+      // 2. Định danh thiết bị: Dùng clientId duy nhất của máy (dù đổi Wi-Fi sang 4G hay VPN vẫn là 1 máy)
       const safeKey = clientId.replace(/[^a-zA-Z0-9]/g, '_');
       const logDocId = `${today}_${safeKey}_${targetId}`;
       const exists = await checkLogExists(logDocId);

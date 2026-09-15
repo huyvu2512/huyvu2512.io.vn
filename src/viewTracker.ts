@@ -97,14 +97,6 @@ export async function trackTargetView(targetId: string): Promise<Record<string, 
     return null;
   }
 
-  const today = getTodayKey();
-  const localKey = `hv_viewed_${today}_${targetId}`;
-
-  // Chặn ngay từ client nếu hôm nay người dùng đã xem: 0 request gửi đi!
-  if (localStorage.getItem(localKey)) {
-    return null;
-  }
-
   // Bước 1: Lấy token xác thực từ API /api/verify
   const token = await getVerificationToken();
   if (!token) {
@@ -115,6 +107,7 @@ export async function trackTargetView(targetId: string): Promise<Record<string, 
 
   try {
     // Bước 2: Gửi yêu cầu đếm view kèm clientId và token đã xác thực
+    // Quyền quyết định tăng hay không hoàn toàn do Firestore daily_views kiểm soát
     const res = await fetch('/api/views', {
       method: 'POST',
       headers: {
@@ -127,9 +120,6 @@ export async function trackTargetView(targetId: string): Promise<Record<string, 
         token,
       }),
     });
-
-    // Đánh dấu client đã ghi nhận hôm nay
-    localStorage.setItem(localKey, '1');
 
     if (res.ok) {
       const data = (await res.json()) as any;
