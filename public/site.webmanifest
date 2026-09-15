@@ -1,0 +1,21 @@
+{
+  "name": "Huy Vũ (@huyvu2512)",
+  "short_name": "Huy Vũ",
+  "description": "Trang cá nhân chính thức của Huy Vũ (@huyvu2512) — Nơi tổng hợp các kênh mạng xã hội và dự án nổi bật.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ebe8f7",
+  "theme_color": "#ebe8f7",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
