@@ -1,6 +1,7 @@
 import react from '@vitejs/plugin-react';
 import { defineConfig, loadEnv } from 'vite';
-import handler from './api/views.ts';
+import viewsHandler from './api/views.ts';
+import verifyHandler from './api/verify.ts';
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -14,7 +15,11 @@ export default defineConfig(({ mode }) => {
         name: 'local-api-middleware',
         configureServer(server) {
           server.middlewares.use(async (req, res, next) => {
-            if (req.url && req.url.startsWith('/api/views')) {
+            const isViews = req.url && req.url.startsWith('/api/views');
+            const isVerify = req.url && req.url.startsWith('/api/verify');
+
+            if (isViews || isVerify) {
+              const targetHandler = isViews ? viewsHandler : verifyHandler;
               try {
                 if (req.method === 'POST') {
                   let body = '';
@@ -27,10 +32,10 @@ export default defineConfig(({ mode }) => {
                     } catch {
                       (req as any).body = {};
                     }
-                    await handler(req as any, res as any);
+                    await targetHandler(req as any, res as any);
                   });
                 } else {
-                  await handler(req as any, res as any);
+                  await targetHandler(req as any, res as any);
                 }
               } catch (err) {
                 console.error('Lỗi API Local:', err);

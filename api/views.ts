@@ -1,6 +1,8 @@
 // Backend Serverless Function (Vercel & Local Vite)
 // Sử dụng chuẩn Firestore REST API - Tốc độ cực nhanh, không phụ thuộc thư viện, không lỗi socket
 
+import { generateToken } from './verify.ts';
+
 const PROJECT_ID = process.env.VITE_FIREBASE_PROJECT_ID || 'huyvu2512-d7bae';
 const API_KEY = process.env.VITE_FIREBASE_API_KEY || '';
 const BASE_URL = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents`;
@@ -40,9 +42,9 @@ async function checkLogExists(logId: string): Promise<boolean> {
 }
 
 /**
- * Lưu log IP cho ngày hôm nay
+ * Lưu log thiết bị & IP cho ngày hôm nay
  */
-async function saveLog(logId: string, ip: string, targetId: string, date: string): Promise<void> {
+async function saveLog(logId: string, ip: string, targetId: string, date: string, clientId?: string): Promise<void> {
   const url = `${BASE_URL}/daily_views?documentId=${logId}&key=${API_KEY}`;
   await fetch(url, {
     method: 'POST',
@@ -52,6 +54,7 @@ async function saveLog(logId: string, ip: string, targetId: string, date: string
         ip: { stringValue: ip },
         targetId: { stringValue: targetId },
         date: { stringValue: date },
+        clientId: { stringValue: clientId || 'unknown' },
         createdAt: { timestampValue: new Date().toISOString() },
       },
     }),
@@ -234,6 +237,8 @@ export default async function handler(req: any, res: any) {
 
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
       const targetId = body.targetId || 'page';
+      const clientId = body.clientId;
+      const token = body.token;
 
       // Trích xuất IP trực tiếp từ Request Header
       const forwarded = req.headers['x-forwarded-for'];
@@ -245,17 +250,25 @@ export default async function handler(req: any, res: any) {
       const vnTime = new Date(now.getTime() + (7 * 60 + now.getTimezoneOffset()) * 60000);
       const today = `${vnTime.getFullYear()}-${String(vnTime.getMonth() + 1).padStart(2, '0')}-${String(vnTime.getDate()).padStart(2, '0')}`;
 
+      // Bắt buộc phải có token hợp lệ được cấp từ API /api/verify
+      if (!clientId || !token || token !== generateToken(clientId, today)) {
+        const views = await getStats();
+        res.statusCode = 200;
+        res.end(JSON.stringify({ views, counted: false }));
+        return;
+      }
+
       // Dọn dẹp log ngày cũ nếu vừa sang ngày mới
       void cleanupOldLogs(today);
 
-      // Kiểm tra IP hôm nay đã click mục này chưa
-      const safeIp = ip.replace(/[^a-zA-Z0-9]/g, '_');
-      const logDocId = `${today}_${safeIp}_${targetId}`;
+      // Định danh thiết bị: Dùng clientId duy nhất của máy (dù đổi Wi-Fi sang 4G hay VPN vẫn là 1 máy)
+      const safeKey = clientId.replace(/[^a-zA-Z0-9]/g, '_');
+      const logDocId = `${today}_${safeKey}_${targetId}`;
       const exists = await checkLogExists(logDocId);
 
       if (!exists) {
-        // Lưu log cho IP và tăng view
-        await saveLog(logDocId, ip, targetId, today);
+        // Lưu log cho thiết bị và tăng view
+        await saveLog(logDocId, ip, targetId, today, clientId);
         await incrementStats(targetId);
       }
 

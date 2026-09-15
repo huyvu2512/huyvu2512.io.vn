@@ -62,6 +62,7 @@ Hệ thống kết hợp giữa giao diện người dùng thời gian thực v�
 ```text
 huyvu2512/
 ├── api/
+│   ├── verify.ts         # Serverless function xác thực thiết bị và cấp token bảo mật
 │   └── views.ts          # Serverless function xử lý ghi nhận và đồng bộ lượt xem
 ├── public/
 │   ├── footer-scrub.mp4  # Video tương tác của nhân vật
@@ -133,6 +134,22 @@ huyvu2512/
 
 ## API Reference
 
+### Xác thực thiết bị (`/api/verify`)
+
+- **POST `/api/verify`**
+  - Xác thực người dùng và tham số thiết bị phần cứng (loại trừ hoàn toàn bot, crawler, AWS, Vercel probe, headless browser), cấp token có chữ ký HMAC bảo mật trước khi ghi nhận lượt xem.
+  - Header: `x-client-human: 1`
+  - Body mẫu:
+    ```json
+    {
+      "clientId": "cid_abc123xyz",
+      "screenWidth": 1920,
+      "screenHeight": 1080,
+      "timezone": "Asia/Ho_Chi_Minh"
+    }
+    ```
+  - Phản hồi: `{ "verified": true, "token": "...", "clientId": "cid_abc123xyz" }`
+
 ### Ghi nhận & Lấy số lượt xem (`/api/views`)
 
 - **GET `/api/views`**
@@ -140,8 +157,15 @@ huyvu2512/
   - Phản hồi mẫu: `{ "views": { "page": 100, "facebook": 45, "total": 145 } }`
 
 - **POST `/api/views`**
-  - Ghi nhận một tương tác mới. Server tự động lấy IP từ request header để kiểm tra chống trùng lặp trong ngày và tự động lọc bot tự động.
-  - Body: `{ "targetId": "facebook" }`
+  - Ghi nhận một tương tác mới. Yêu cầu token hợp lệ từ `/api/verify`. Server kiểm tra chữ ký token, định danh thiết bị vật lý qua `clientId` (dù đổi mạng Wi-Fi/4G/VPN vẫn là 1 máy), chống trùng lặp theo ngày và dọn dẹp log cũ.
+  - Body mẫu:
+    ```json
+    {
+      "targetId": "page",
+      "clientId": "cid_abc123xyz",
+      "token": "..."
+    }
+    ```
 
 ---
 
