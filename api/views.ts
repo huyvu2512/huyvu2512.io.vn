@@ -1,7 +1,17 @@
 // Backend Serverless Function (Vercel & Local Vite)
 // Sử dụng chuẩn Firestore REST API - Tốc độ cực nhanh, không phụ thuộc thư viện, không lỗi socket
 
-import { generateToken } from './verify.ts';
+import crypto from 'crypto';
+
+const SECRET_SALT = process.env.VITE_FIREBASE_API_KEY || 'hv_secret_salt_2026';
+
+function generateToken(clientId: string, date: string): string {
+  return crypto
+    .createHmac('sha256', SECRET_SALT)
+    .update(`${clientId}_${date}`)
+    .digest('hex')
+    .slice(0, 32);
+}
 
 const PROJECT_ID = process.env.VITE_FIREBASE_PROJECT_ID || 'huyvu2512-d7bae';
 const API_KEY = process.env.VITE_FIREBASE_API_KEY || '';
