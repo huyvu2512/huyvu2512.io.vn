@@ -66,15 +66,7 @@ export default function App() {
   }, []);
 
   const incrementView = (id: string) => {
-    // Tăng tức thì trên giao diện client
-    setViews((prev) => {
-      const next = { ...prev, [id]: (prev[id] || 0) + 1 };
-      try {
-        localStorage.setItem('hv_cached_views', JSON.stringify(next));
-      } catch {}
-      return next;
-    });
-    // Ghi nhận vào Server API (Server và Firestore daily_views sẽ kiểm tra trùng lặp trong ngày)
+    // Không tăng ảo trên client: hoàn toàn phụ thuộc vào kết quả xác thực và ghi nhận từ Server API
     void trackTargetView(id).then((updated) => {
       if (updated) updateViews(updated);
     });
