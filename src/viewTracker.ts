@@ -27,6 +27,11 @@ export function getTodayKey(): string {
 }
 
 export async function trackTargetView(targetId: string): Promise<Record<string, number> | null> {
+  // Chặn nếu chạy trong môi trường automation / headless bot
+  if (typeof navigator !== 'undefined' && (navigator as any).webdriver) {
+    return null;
+  }
+
   const today = getTodayKey();
   const localKey = `hv_viewed_${today}_${targetId}`;
 
@@ -40,6 +45,7 @@ export async function trackTargetView(targetId: string): Promise<Record<string, 
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'x-client-human': '1',
       },
       body: JSON.stringify({ targetId }),
     });

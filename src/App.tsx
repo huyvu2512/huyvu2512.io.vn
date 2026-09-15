@@ -52,7 +52,6 @@ export default function App() {
       setViews((prev) => ({
         ...prev,
         [id]: (prev[id] || 0) + 1,
-        total: (prev.total || 0) + 1,
       }));
     }
     // Ghi nhận vào Server API với logic kiểm tra IP và reset theo ngày
@@ -467,9 +466,9 @@ export default function App() {
               Tổng hợp các kênh mạng xã hội chính thức và sản phẩm cá nhân.
             </p>
 
-            <div className="total-views-badge" title="Tổng lượt truy cập">
+            <div className="total-views-badge" title="Lượt xem trang">
               <EyeIcon />
-              <span>{views.total?.toLocaleString('vi-VN')} lượt xem</span>
+              <span>{(views.page || views.total || 0).toLocaleString('vi-VN')} lượt xem</span>
             </div>
 
             {/* Category Filter Tabs: Tất cả -> Mạng xã hội -> Dự án Website */}

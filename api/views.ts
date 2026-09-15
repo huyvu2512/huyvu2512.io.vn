@@ -59,20 +59,70 @@ async function saveLog(logId: string, ip: string, targetId: string, date: string
 }
 
 /**
+ * Kiểm tra xem request có phải bot, crawler hoặc AWS/Vercel deploy checker không
+ */
+function isAutomatedBot(req: any): boolean {
+  const userAgent = (req.headers['user-agent'] || '').toLowerCase();
+
+  // 1. Không có User-Agent hoặc quá ngắn -> Không phải trình duyệt người dùng
+  if (!userAgent || userAgent.length < 16) return true;
+
+  // 2. Danh sách các bot, crawler và công cụ kiểm tra tự động
+  const botSignatures = [
+    'bot',
+    'crawl',
+    'spider',
+    'slurp',
+    'vercel',
+    'aws',
+    'amazon',
+    'google',
+    'headless',
+    'lighthouse',
+    'curl',
+    'wget',
+    'python',
+    'postman',
+    'axios',
+    'node-fetch',
+    'undici',
+    'pingdom',
+    'uptimerobot',
+  ];
+
+  if (botSignatures.some((sig) => userAgent.includes(sig))) {
+    return true;
+  }
+
+  // 3. Header prefetch tự động
+  if (req.headers['purpose'] === 'prefetch' || req.headers['sec-purpose'] === 'prefetch') {
+    return true;
+  }
+
+  // 4. Request chuẩn từ frontend client thật luôn có header x-client-human
+  if (req.headers['x-client-human'] !== '1') {
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * Tăng số đếm nguyên tử (atomic increment) trong Firestore
  */
 async function incrementStats(targetId: string): Promise<void> {
   const commitUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:commit?key=${API_KEY}`;
   const transforms: any[] = [
     {
-      fieldPath: 'total',
+      fieldPath: targetId,
       increment: { integerValue: '1' },
     },
   ];
 
-  if (targetId !== 'page') {
+  // Nếu là lượt xem trang thì đồng bộ luôn với total ban đầu
+  if (targetId === 'page') {
     transforms.push({
-      fieldPath: targetId,
+      fieldPath: 'total',
       increment: { integerValue: '1' },
     });
   }
@@ -154,7 +204,7 @@ async function cleanupOldLogs(today: string): Promise<void> {
 export default async function handler(req: any, res: any) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-client-human');
   res.setHeader('Content-Type', 'application/json');
 
   if (req.method === 'OPTIONS') {
@@ -174,6 +224,14 @@ export default async function handler(req: any, res: any) {
 
     // 2. POST: Ghi nhận view (Server tự trích xuất IP, tự check chống spam và dọn dẹp ngày cũ)
     if (req.method === 'POST') {
+      // Bỏ qua bot, crawler hoặc các lần ping kiểm tra tự động của AWS / Vercel
+      if (isAutomatedBot(req)) {
+        const views = await getStats();
+        res.statusCode = 200;
+        res.end(JSON.stringify({ views, counted: false }));
+        return;
+      }
+
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
       const targetId = body.targetId || 'page';
 
