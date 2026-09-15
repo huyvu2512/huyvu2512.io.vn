@@ -1,7 +1,6 @@
 import react from '@vitejs/plugin-react';
 import { defineConfig, loadEnv } from 'vite';
 import handler from './api/views.ts';
-import analyticsHandler from './api/analytics.ts';
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -15,17 +14,6 @@ export default defineConfig(({ mode }) => {
         name: 'local-api-middleware',
         configureServer(server) {
           server.middlewares.use(async (req, res, next) => {
-            if (req.url && req.url.startsWith('/api/analytics')) {
-              try {
-                await analyticsHandler(req as any, res as any);
-              } catch (err) {
-                console.error('Lỗi API Analytics Local:', err);
-                res.statusCode = 500;
-                res.end(JSON.stringify({ error: String(err) }));
-              }
-              return;
-            }
-
             if (req.url && req.url.startsWith('/api/views')) {
               try {
                 if (req.method === 'POST') {

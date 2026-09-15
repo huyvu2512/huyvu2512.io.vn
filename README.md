@@ -62,8 +62,7 @@ Hệ thống kết hợp giữa giao diện người dùng thời gian thực v�
 ```text
 huyvu2512/
 ├── api/
-│   ├── views.ts          # Serverless function xử lý ghi nhận và đồng bộ lượt xem
-│   └── analytics.ts      # Endpoint xem thống kê dữ liệu và số lượng truy cập
+│   └── views.ts          # Serverless function xử lý ghi nhận và đồng bộ lượt xem
 ├── public/
 │   ├── footer-scrub.mp4  # Video tương tác của nhân vật
 │   ├── header-logo.webp  # Hình ảnh xem trước khi chia sẻ liên kết
@@ -134,20 +133,15 @@ huyvu2512/
 
 ## API Reference
 
-### 1. Ghi nhận & Lấy số lượt xem (`/api/views`)
+### Ghi nhận & Lấy số lượt xem (`/api/views`)
 
 - **GET `/api/views`**
   - Trả về danh sách số lượt xem hiện tại của tất cả các liên kết.
-  - Phản hồi: `{ "views": { "page": 100, "facebook": 45, "total": 145 } }`
+  - Phản hồi mẫu: `{ "views": { "page": 100, "facebook": 45, "total": 145 } }`
 
 - **POST `/api/views`**
-  - Ghi nhận một tương tác mới. Server tự động lấy IP từ request header để kiểm tra chống trùng lặp trong ngày.
+  - Ghi nhận một tương tác mới. Server tự động lấy IP từ request header để kiểm tra chống trùng lặp trong ngày và tự động lọc bot tự động.
   - Body: `{ "targetId": "facebook" }`
-
-### 2. Xem thống kê & Lượng người dùng (`/api/analytics`)
-
-- **GET `/api/analytics`**
-  - Cung cấp báo cáo tổng quan về trạng thái hệ thống, số lượt tương tác trong ngày và phân bố click trên từng danh mục.
 
 ---
 
