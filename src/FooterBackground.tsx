@@ -45,8 +45,12 @@ export default function FooterBackground() {
     let eyeCenterX = 0;
     let eyeCenterY = 0;
 
-    const mobile = window.matchMedia('(max-width: 700px)');
+    const mobile = window.matchMedia('(max-width: 768px)');
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    // Sửa triệt để lỗi Safari / iOS WebKit React muted bug
+    video.defaultMuted = true;
+    video.muted = true;
 
     // Cập nhật vị trí tâm mắt khi tải / resize / cuộn trang
     const updateMetrics = () => {
@@ -140,11 +144,21 @@ export default function FooterBackground() {
       }
     };
 
+    const handleFirstTouch = () => {
+      if (video && video.paused && mobile.matches) {
+        void video.play().catch(() => {});
+      }
+      window.removeEventListener('touchstart', handleFirstTouch);
+      window.removeEventListener('pointerdown', handleFirstTouch);
+    };
+
     video.addEventListener('seeked', onSeeked);
     video.addEventListener('loadeddata', onReady);
     mobile.addEventListener('change', onReady);
     reducedMotion.addEventListener('change', onReady);
 
+    window.addEventListener('touchstart', handleFirstTouch, { passive: true });
+    window.addEventListener('pointerdown', handleFirstTouch, { passive: true });
     window.addEventListener('pointermove', onPointerMove, { passive: true });
     window.addEventListener('resize', updateMetrics, { passive: true });
     window.addEventListener('scroll', updateMetrics, { passive: true });
@@ -160,6 +174,8 @@ export default function FooterBackground() {
       video.removeEventListener('loadeddata', onReady);
       mobile.removeEventListener('change', onReady);
       reducedMotion.removeEventListener('change', onReady);
+      window.removeEventListener('touchstart', handleFirstTouch);
+      window.removeEventListener('pointerdown', handleFirstTouch);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('resize', updateMetrics);
       window.removeEventListener('scroll', updateMetrics);
@@ -170,10 +186,13 @@ export default function FooterBackground() {
     <div className="footer-background" aria-hidden="true">
       <video
         ref={videoRef}
+        autoPlay
         muted
         playsInline
+        loop
         preload="auto"
-        src="/footer-scrub.mp4"
+        poster="/footer-poster.webp"
+        src="/footer-scrub.mp4#t=0.001"
       />
     </div>
   );
