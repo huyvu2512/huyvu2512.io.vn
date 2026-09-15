@@ -20,8 +20,31 @@ export default function App() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<'all' | 'social' | 'website'>('all');
 
-  // Quản lý số lượt xem / click (100% nạp từ Firestore DB)
-  const [views, setViews] = useState<Record<string, number>>({});
+  // Quản lý số lượt xem: Nạp tức thì từ cache localStorage để hiển thị ngay trong 0ms
+  const [views, setViews] = useState<Record<string, number>>(() => {
+    try {
+      const cached = localStorage.getItem('hv_cached_views');
+      if (cached) return JSON.parse(cached);
+    } catch {}
+    return {};
+  });
+
+  const [loadingViews, setLoadingViews] = useState<boolean>(() => {
+    try {
+      const cached = localStorage.getItem('hv_cached_views');
+      if (cached && Object.keys(JSON.parse(cached)).length > 0) return false;
+    } catch {}
+    return true;
+  });
+
+  const updateViews = (latest: Record<string, number>) => {
+    setViews(latest);
+    setLoadingViews(false);
+    try {
+      localStorage.setItem('hv_cached_views', JSON.stringify(latest));
+    } catch {}
+  };
+
   const initialFetched = useRef(false);
 
   // Khi mở trang / F5: luôn gọi trackTargetView('page') để xác thực thiết bị và ghi nhận view
@@ -31,11 +54,12 @@ export default function App() {
 
     void trackTargetView('page').then((updated) => {
       if (updated) {
-        setViews(updated);
+        updateViews(updated);
       } else {
         // Fallback nạp views hiện tại nếu trackTargetView không trả về
         void fetchViews().then((latestViews) => {
-          if (latestViews) setViews(latestViews);
+          if (latestViews) updateViews(latestViews);
+          else setLoadingViews(false);
         });
       }
     });
@@ -43,14 +67,24 @@ export default function App() {
 
   const incrementView = (id: string) => {
     // Tăng tức thì trên giao diện client
-    setViews((prev) => ({
-      ...prev,
-      [id]: (prev[id] || 0) + 1,
-    }));
+    setViews((prev) => {
+      const next = { ...prev, [id]: (prev[id] || 0) + 1 };
+      try {
+        localStorage.setItem('hv_cached_views', JSON.stringify(next));
+      } catch {}
+      return next;
+    });
     // Ghi nhận vào Server API (Server và Firestore daily_views sẽ kiểm tra trùng lặp trong ngày)
     void trackTargetView(id).then((updated) => {
-      if (updated) setViews(updated);
+      if (updated) updateViews(updated);
     });
+  };
+
+  const renderViewCount = (id: string) => {
+    if (loadingViews && views[id] === undefined) {
+      return <span className="view-skeleton" />;
+    }
+    return views[id] || 0;
   };
 
   // Hiệu ứng gõ chữ (Typewriter effect) cho tiêu đề tab trình duyệt
@@ -370,7 +404,7 @@ export default function App() {
                 <div className="card-right">
                   <div className="view-count-badge" title="Lượt xem">
                     <EyeIcon />
-                    <span>{views[item.id] || 0}</span>
+                    <span>{renderViewCount(item.id)}</span>
                   </div>
                   <ExternalLinkIcon />
                 </div>
@@ -417,7 +451,7 @@ export default function App() {
                 <div className="card-right">
                   <div className="view-count-badge" title="Lượt xem">
                     <EyeIcon />
-                    <span>{views[item.id] || 0}</span>
+                    <span>{renderViewCount(item.id)}</span>
                   </div>
                   <ExternalLinkIcon />
                 </div>
@@ -461,7 +495,15 @@ export default function App() {
 
             <div className="total-views-badge" title="Lượt xem trang">
               <EyeIcon />
-              <span>{(views.page || views.total || 0).toLocaleString('vi-VN')} lượt xem</span>
+              <span>
+                {loadingViews && views.page === undefined && views.total === undefined ? (
+                  <>
+                    <span className="view-skeleton" /> lượt xem
+                  </>
+                ) : (
+                  `${(views.page || views.total || 0).toLocaleString('vi-VN')} lượt xem`
+                )}
+              </span>
             </div>
 
             {/* Category Filter Tabs: Tất cả -> Mạng xã hội -> Dự án Website */}
@@ -519,7 +561,7 @@ export default function App() {
                   <div className="social-pill-right">
                     <div className="view-count-badge" title="Lượt xem">
                       <EyeIcon />
-                      <span>{views[item.id] || 0}</span>
+                      <span>{renderViewCount(item.id)}</span>
                     </div>
                     <div className="social-pill-arrow">
                       <ExternalLinkIcon />
@@ -558,7 +600,7 @@ export default function App() {
                     </div>
                     <div className="view-count-badge visual-view-badge" title="Lượt xem">
                       <EyeIcon />
-                      <span>{views[item.id] || 0}</span>
+                      <span>{renderViewCount(item.id)}</span>
                     </div>
                   </div>
                   <div className="visual-card-bottom">
@@ -596,7 +638,7 @@ export default function App() {
                     <div className="social-pill-right">
                       <div className="view-count-badge" title="Lượt xem">
                         <EyeIcon />
-                        <span>{views[item.id] || 0}</span>
+                        <span>{renderViewCount(item.id)}</span>
                       </div>
                       <div className="social-pill-arrow">
                         <ExternalLinkIcon />
@@ -635,7 +677,7 @@ export default function App() {
                       </div>
                       <div className="view-count-badge visual-view-badge" title="Lượt xem">
                         <EyeIcon />
-                        <span>{views[item.id] || 0}</span>
+                        <span>{renderViewCount(item.id)}</span>
                       </div>
                     </div>
                     <div className="visual-card-bottom">

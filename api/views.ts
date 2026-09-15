@@ -158,24 +158,35 @@ async function incrementStats(targetId: string): Promise<void> {
   }).catch(() => {});
 }
 
+let inMemoryCleanedDate = '';
+
 /**
  * Tự động xóa sạch toàn bộ logs của các ngày trước khi bước sang ngày mới
  */
 async function cleanupOldLogs(today: string): Promise<void> {
+  // 1. Tối ưu bộ nhớ đệm Lambda: Bỏ qua ngay nếu container đã kiểm tra trong ngày hôm nay
+  if (inMemoryCleanedDate === today) {
+    return;
+  }
+
   try {
     const checkRes = await fetch(`${BASE_URL}/views/last_cleanup?key=${API_KEY}`);
     if (checkRes.ok) {
       const data = (await checkRes.json()) as any;
       if (data && data.fields?.date?.stringValue === today) {
+        inMemoryCleanedDate = today;
         return;
       }
     }
+
+    inMemoryCleanedDate = today;
 
     // Lấy danh sách tài liệu trong daily_views để xóa sạch các ngày trước
     const listRes = await fetch(`${BASE_URL}/daily_views?pageSize=300&key=${API_KEY}`);
     if (listRes.ok) {
       const data = (await listRes.json()) as any;
       if (data && Array.isArray(data.documents)) {
+        const deletePromises: Promise<any>[] = [];
         for (const doc of data.documents) {
           if (doc && doc.name) {
             const docPath = doc.name.split('/documents/')[1];
@@ -183,9 +194,14 @@ async function cleanupOldLogs(today: string): Promise<void> {
             const docId = docPath.split('/').pop() || '';
             // Xóa nếu ngày ghi nhận nhỏ hơn hôm nay hoặc tiền tố document ID nhỏ hơn hôm nay
             if ((docDate && docDate < today) || (docId && docId.substring(0, 10) < today)) {
-              await fetch(`${BASE_URL}/${docPath}?key=${API_KEY}`, { method: 'DELETE' }).catch(() => {});
+              deletePromises.push(
+                fetch(`${BASE_URL}/${docPath}?key=${API_KEY}`, { method: 'DELETE' }).catch(() => {})
+              );
             }
           }
+        }
+        if (deletePromises.length > 0) {
+          await Promise.all(deletePromises);
         }
       }
     }
@@ -268,9 +284,11 @@ export default async function handler(req: any, res: any) {
       const exists = await checkLogExists(logDocId);
 
       if (!exists) {
-        // Lưu log cho thiết bị và tăng view
-        await saveLog(logDocId, ip, targetId, today, clientId);
-        await incrementStats(targetId);
+        // Lưu log và tăng view đồng thời (song song) để giảm thời gian phản hồi API
+        await Promise.all([
+          saveLog(logDocId, ip, targetId, today, clientId),
+          incrementStats(targetId),
+        ]);
       }
 
       const views = await getStats();

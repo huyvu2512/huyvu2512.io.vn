@@ -781,6 +781,48 @@ button:focus-visible {
   stroke-width: 2.2;
 }
 
+/* Shimmer Skeleton Loading for View Badges */
+.view-skeleton {
+  display: inline-block;
+  width: 16px;
+  height: 10px;
+  border-radius: 3px;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.08) 25%,
+    rgba(0, 0, 0, 0.2) 50%,
+    rgba(0, 0, 0, 0.08) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.3s ease-in-out infinite;
+  vertical-align: middle;
+}
+
+.total-views-badge .view-skeleton {
+  width: 26px;
+  height: 12px;
+  margin-right: 2px;
+}
+
+.visual-view-badge .view-skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.12) 25%,
+    rgba(0, 0, 0, 0.28) 50%,
+    rgba(0, 0, 0, 0.12) 75%
+  );
+  background-size: 200% 100%;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 .visual-badge-logo {
   width: 34px;
   height: 34px;
