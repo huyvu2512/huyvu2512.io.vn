@@ -125,9 +125,11 @@ function isAutomatedBot(req: any): boolean {
  */
 async function incrementStats(targetId: string): Promise<void> {
   const commitUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:commit?key=${API_KEY}`;
+  // Firestore REST API quy định: Nếu tên field có dấu gạch ngang (-) hoặc ký tự đặc biệt, bắt buộc phải bọc trong backtick `
+  const safeFieldPath = targetId.includes('-') ? `\`${targetId}\`` : targetId;
   const transforms: any[] = [
     {
-      fieldPath: targetId,
+      fieldPath: safeFieldPath,
       increment: { integerValue: '1' },
     },
   ];
