@@ -2,7 +2,7 @@
 
 # Huy Vũ (@huyvu2512)
 
-**Trang cá nhân chính thức của Huy Vũ (@huyvu2512) — Nơi tổng hợp các kênh mạng xã hội và dự án nổi bật.**
+**Bio cá nhân của Huy Vũ (@huyvu2512) — Tổng hợp liên kết các trang mạng xã hội và dự án cá nhân**
 
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -65,9 +65,11 @@ huyvu2512/
 │   ├── verify.ts         # Serverless function xác thực thiết bị và cấp token bảo mật
 │   └── views.ts          # Serverless function xử lý ghi nhận và đồng bộ lượt xem
 ├── public/
+│   ├── footer-poster.webp # Ảnh đại diện khung hình video nhân vật
 │   ├── footer-scrub.mp4  # Video tương tác của nhân vật
-│   ├── header-logo.webp  # Hình ảnh xem trước khi chia sẻ liên kết
+│   ├── header-logo.webp  # Logo nhận diện thương hiệu Huy Vũ
 │   ├── logo.png          # Biểu tượng ứng dụng
+│   ├── preview.webp      # Hình ảnh xem trước khi chia sẻ liên kết (Open Graph Banner)
 │   ├── robots.txt        # Tệp chỉ thị cho công cụ tìm kiếm
 │   ├── sitemap.xml       # Sơ đồ trang web chuẩn XML
 │   └── site.webmanifest  # Cấu hình cài đặt Web App (PWA)
