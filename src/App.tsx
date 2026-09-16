@@ -685,7 +685,13 @@ export default function App() {
           <div className="showcase-footer">
             <button
               className="interaction-pill"
-              onClick={() => smoothScrollTo(0, 900)}
+              onClick={() => {
+                if (window.innerWidth <= 768) {
+                  window.scrollTo({ top: 0, behavior: 'instant' });
+                } else {
+                  smoothScrollTo(0, 900);
+                }
+              }}
               aria-label="Quay lại trang chính"
             >
               <svg
