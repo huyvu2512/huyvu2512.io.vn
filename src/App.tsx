@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import FooterBackground from './FooterBackground';
 import BrandLogo from './BrandLogo';
 import { socialNetworks, allSocialNetworks, myWebsites, type SocialItem } from './socialData';
@@ -687,7 +689,8 @@ export default function App() {
               className="interaction-pill"
               onClick={() => {
                 if (window.innerWidth <= 768) {
-                  window.scrollTo({ top: 0, behavior: 'instant' });
+                  // Hiệu ứng cuộn lướt dứt khoát, nhanh gọn (350ms) thay vì giật biến mất hay lê thê
+                  smoothScrollTo(0, 350);
                 } else {
                   smoothScrollTo(0, 900);
                 }
@@ -712,6 +715,8 @@ export default function App() {
           </div>
         </div>
       </section>
+      <Analytics />
+      <SpeedInsights />
     </>
   );
 }
