@@ -158,6 +158,16 @@ export const myWebsites: SocialItem[] = [
     category: 'website',
   },
   {
+    id: 'discord-quest',
+    name: 'Discord Quest',
+    handle: 'discord.huyvu2512.io.vn',
+    url: 'https://discord.huyvu2512.io.vn/',
+    tag: 'Truy cập',
+    icon: '/icons/discordquest.webp',
+    previewImage: '/previews/discordquest-preview.webp',
+    category: 'website',
+  },
+  {
     id: 'toptrending',
     name: 'Top Trending',
     handle: 'trending.huyvu2512.io.vn',
