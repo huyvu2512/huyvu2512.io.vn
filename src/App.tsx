@@ -3,7 +3,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import FooterBackground from './FooterBackground';
 import BrandLogo from './BrandLogo';
-import { socialNetworks, allSocialNetworks, myWebsites, type SocialItem } from './socialData';
+import { socialNetworks, allSocialNetworks, myWebsites, featuredWebsites, type SocialItem } from './socialData';
 import {
   FacebookIcon,
   InstagramIcon,
@@ -419,7 +419,7 @@ export default function App() {
             <span>websites</span>
           </div>
           <div className="footer-nav" style={{ marginTop: '1.3vw' }}>
-            {myWebsites.map((item) => (
+            {featuredWebsites.map((item) => (
               <div
                 key={item.id}
                 className="bio-card"

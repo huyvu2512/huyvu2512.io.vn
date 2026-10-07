@@ -199,4 +199,7 @@ export const myWebsites: SocialItem[] = [
   },
 ];
 
+// 4 Website dự án hiển thị ở Trang 1 (cân xứng 4 - 4 với Mạng xã hội bên trái)
+export const featuredWebsites: SocialItem[] = myWebsites.slice(0, 4);
+
 export const directChats = myWebsites;
