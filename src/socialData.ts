@@ -168,7 +168,7 @@ export const myWebsites: SocialItem[] = [
     category: 'website',
   },
   {
-    id: 'toptrending',
+    id: 'top-trending',
     name: 'Top Trending',
     handle: 'trending.huyvu2512.io.vn',
     url: 'https://trending.huyvu2512.io.vn',
