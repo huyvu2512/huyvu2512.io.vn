@@ -173,7 +173,7 @@ export const myWebsites: SocialItem[] = [
     handle: 'streak.huyvu2512.io.vn',
     url: 'https://streak.huyvu2512.io.vn/',
     tag: 'Truy cập',
-    icon: 'https://streak.huyvu2512.io.vn/assets/icon-512.png',
+    icon: 'https://streak.huyvu2512.io.vn/assets/favicon.png',
     previewImage: 'https://streak.huyvu2512.io.vn/assets/preview.png',
     category: 'website',
   },
