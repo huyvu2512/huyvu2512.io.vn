@@ -145,16 +145,16 @@ export const allSocialNetworks: SocialItem[] = [
   },
 ];
 
-// 4 Website dự án do Huy Vũ lập trình & phát triển (có preview card lớn)
+// Danh sách đầy đủ các Website dự án do Huy Vũ phát triển (Trang 2 Visual Showcase)
 export const myWebsites: SocialItem[] = [
   {
     id: 'locket-celebrity',
     name: 'Locket Celebrity',
-    handle: 'locketcelebrity.app',
-    url: 'https://locketcelebrity.app',
+    handle: 'locket.huyvu2512.io.vn',
+    url: 'https://locket.huyvu2512.io.vn/',
     tag: 'Truy cập',
-    icon: '/icons/locketcelebrity.webp',
-    previewImage: '/previews/locketcelebrity-preview.webp',
+    icon: 'https://locket.huyvu2512.io.vn/celebrity.png',
+    previewImage: 'https://locket.huyvu2512.io.vn/banner.png',
     category: 'website',
   },
   {
@@ -163,28 +163,38 @@ export const myWebsites: SocialItem[] = [
     handle: 'discord.huyvu2512.io.vn',
     url: 'https://discord.huyvu2512.io.vn/',
     tag: 'Truy cập',
-    icon: '/icons/discordquest.webp',
-    previewImage: '/previews/discordquest-preview.webp',
+    icon: 'https://discord.huyvu2512.io.vn/icon-512.png',
+    previewImage: 'https://discord.huyvu2512.io.vn/preview.png',
+    category: 'website',
+  },
+  {
+    id: 'locket-streak',
+    name: 'Locket Streak',
+    handle: 'streak.huyvu2512.io.vn',
+    url: 'https://streak.huyvu2512.io.vn/',
+    tag: 'Truy cập',
+    icon: 'https://streak.huyvu2512.io.vn/assets/icon-512.png',
+    previewImage: 'https://streak.huyvu2512.io.vn/assets/preview.png',
     category: 'website',
   },
   {
     id: 'top-trending',
     name: 'Top Trending',
     handle: 'trending.huyvu2512.io.vn',
-    url: 'https://trending.huyvu2512.io.vn',
+    url: 'https://trending.huyvu2512.io.vn/',
     tag: 'Truy cập',
-    icon: '/icons/toptrending.webp',
-    previewImage: '/previews/toptrending-preview.webp',
+    icon: 'https://trending.huyvu2512.io.vn/assets/favicon.png',
+    previewImage: 'https://trending.huyvu2512.io.vn/assets/preview.png',
     category: 'website',
   },
   {
     id: 'cookie-checker',
     name: 'Cookie Checker',
     handle: 'cookie.huyvu2512.io.vn',
-    url: 'https://cookie.huyvu2512.io.vn',
+    url: 'https://cookie.huyvu2512.io.vn/',
     tag: 'Truy cập',
-    icon: '/icons/cookiechecker.webp',
-    previewImage: '/previews/cookiechecker-preview.webp',
+    icon: 'https://cookie.huyvu2512.io.vn/assets/favicon.png',
+    previewImage: 'https://cookie.huyvu2512.io.vn/assets/preview.png',
     category: 'website',
   },
   {
@@ -194,7 +204,7 @@ export const myWebsites: SocialItem[] = [
     url: 'https://github.com/huyvu2512/youtube-customizer',
     tag: 'Truy cập',
     icon: '/icons/youtubecustomizer.webp',
-    previewImage: '/previews/youtubecustomizer-preview.webp',
+    previewImage: 'https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/assets/preview.png',
     category: 'website',
   },
 ];
