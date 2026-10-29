@@ -207,6 +207,16 @@ export const myWebsites: SocialItem[] = [
     previewImage: 'https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/assets/preview.png',
     category: 'website',
   },
+  {
+    id: 'colab-drive',
+    name: 'Colab Drive',
+    handle: 'colab.research.google.com',
+    url: 'https://colab.research.google.com/github/huyvu2512/colab-drive/blob/main/colab-drive.ipynb',
+    tag: 'Truy cập',
+    icon: 'https://colab.research.google.com/img/colab_favicon_256px.png',
+    previewImage: 'https://raw.githubusercontent.com/huyvu2512/colab-drive/main/assets/preview.png',
+    category: 'website',
+  },
 ];
 
 // 4 Website dự án hiển thị ở Trang 1 (cân xứng 4 - 4 với Mạng xã hội bên trái)

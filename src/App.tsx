@@ -585,6 +585,9 @@ export default function App() {
                       alt={item.name}
                       className="visual-card-bg"
                       loading="lazy"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLElement).style.display = 'none';
+                      }}
                     />
                   )}
                   <div className="visual-card-scrim" />

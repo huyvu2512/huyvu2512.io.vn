@@ -42,7 +42,7 @@ Hệ thống kết hợp giữa giao diện người dùng thời gian thực v�
 - **Mắt nhân vật tương tác trực quan:** Tính toán góc vector thời gian thực từ vị trí con trỏ chuột hoặc cử chỉ chạm, kết hợp thuật toán làm mượt chuyển động (linear interpolation) và tua frame video qua `fastSeek`.
 - **Bố cục hai tầng cân xứng hoàn hảo (4 - 4 Layout):**
   - **Trang 1:** 4 mạng xã hội chính bên trái đối xứng với 4 dự án website tiêu biểu bên phải (*Locket Celebrity, Discord Quest, Locket Streak, Top Trending*).
-  - **Trang 2 (Showcase):** Tổng hợp toàn bộ mạng xã hội dạng link pills (Beacons style) và các dự án cá nhân (*Cookie Checker, YouTube Customizer...*) dạng visual cards với banner lớn.
+  - **Trang 2 (Showcase):** Tổng hợp toàn bộ mạng xã hội dạng link pills (Beacons style) và các dự án cá nhân (*Cookie Checker, YouTube Customizer, Colab Drive...*) dạng visual cards với banner lớn.
 - **Tự động đồng bộ tài sản trực tuyến (Live Online Assets):** Nạp icon và banner preview trực tiếp từ domain/repo của từng dự án con, tự động cập nhật khi dự án con thay đổi mà không cần lưu trữ tĩnh trong repo.
 - **Hệ thống theo dõi lượt truy cập Serverless:**
   - Giao tiếp trực tiếp với Google Firestore qua REST API v1, không phụ thuộc vào Firebase Client SDK nhằm giảm kích thước bundle.
