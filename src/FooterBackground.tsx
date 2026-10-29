@@ -191,8 +191,8 @@ export default function FooterBackground() {
         playsInline
         loop
         preload="auto"
-        poster="/footer-poster.webp"
-        src="/footer-scrub.mp4#t=0.001"
+        poster="/assets/footer-poster.webp"
+        src="/assets/footer-scrub.mp4#t=0.001"
       />
     </div>
   );

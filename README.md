@@ -24,7 +24,7 @@
 ---
 
 <div align="center">
-  <img src="public/preview.png" alt="Giao diện Huy Vũ" width="100%">
+  <img src="public/assets/preview.png" alt="Giao diện Huy Vũ" width="100%">
 </div>
 
 ---
@@ -76,13 +76,15 @@ huyvu2512/
 │   ├── verify.ts         # Serverless function xác thực thiết bị và cấp token bảo mật
 │   └── views.ts          # Serverless function xử lý ghi nhận và đồng bộ lượt xem
 ├── public/
+│   ├── assets/           # Tài nguyên tĩnh nội bộ (ảnh, video, logo và banner xem trước)
+│   │   ├── footer-poster.webp # Ảnh đại diện khung hình video nhân vật
+│   │   ├── footer-scrub.mp4   # Video tương tác của nhân vật
+│   │   ├── header-logo.webp   # Logo nhận diện thương hiệu Huy Vũ
+│   │   ├── logo.png           # Biểu tượng ứng dụng và favicon
+│   │   ├── preview.jpg        # Phiên bản JPG siêu nhẹ phục vụ Messenger / Facebook Scraper
+│   │   └── preview.png        # Hình ảnh xem trước khi chia sẻ liên kết (Open Graph Banner 1200x630)
+│   ├── fonts/            # Bộ font chữ phục vụ hiển thị ngoại tuyến
 │   ├── icons/            # Biểu tượng các mạng xã hội cố định
-│   ├── footer-poster.webp # Ảnh đại diện khung hình video nhân vật
-│   ├── footer-scrub.mp4  # Video tương tác của nhân vật
-│   ├── header-logo.webp  # Logo nhận diện thương hiệu Huy Vũ
-│   ├── logo.png          # Biểu tượng ứng dụng
-│   ├── preview.png       # Hình ảnh xem trước khi chia sẻ liên kết (Open Graph Banner 1200x630)
-│   ├── preview.jpg       # Phiên bản JPG siêu nhẹ phục vụ Messenger / Facebook Scraper
 │   ├── robots.txt        # Tệp chỉ thị cho công cụ tìm kiếm
 │   ├── sitemap.xml       # Sơ đồ trang web chuẩn XML
 │   └── site.webmanifest  # Cấu hình cài đặt Web App (PWA)
